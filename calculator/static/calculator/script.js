@@ -1,40 +1,64 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("calc-form");
-    const num1 = document.getElementById("num1");
-    const num2 = document.getElementById("num2");
-    const operation = document.getElementById("operation");
-    const resultBox = document.getElementById("result");
+document.addEventListener("DOMContentLoaded", () => {
+    const display = document.getElementById("display");
+    let current = "";
+    let operator = "";
+    let previous = "";
 
-    form.addEventListener("submit", function (event) {
-        event.preventDefault(); // stop form from reloading page
+    const updateDisplay = (text) => display.textContent = text;
 
-        const n1 = parseFloat(num1.value);
-        const n2 = parseFloat(num2.value);
-        const op = operation.value;
-
-        let result;
-
-        if (isNaN(n1) || isNaN(n2)) {
-            result = "❌ Please enter valid numbers";
-        } else {
-            switch (op) {
-                case "add":
-                    result = n1 + n2;
-                    break;
-                case "subtract":
-                    result = n1 - n2;
-                    break;
-                case "multiply":
-                    result = n1 * n2;
-                    break;
-                case "divide":
-                    result = n2 !== 0 ? n1 / n2 : "⚠️ Division by zero not allowed";
-                    break;
-                default:
-                    result = "Unknown operation";
-            }
+    const calculate = () => {
+        let result = 0;
+        let num1 = parseFloat(previous);
+        let num2 = parseFloat(current);
+        switch(operator) {
+            case "+": result = num1 + num2; break;
+            case "−": result = num1 - num2; break;
+            case "×": result = num1 * num2; break;
+            case "÷": result = num2 !== 0 ? num1 / num2 : "Error"; break;
         }
+        return result;
+    }
 
-        resultBox.innerHTML = `<h2>Result: ${result}</h2>`;
+    document.querySelectorAll(".num").forEach(btn => {
+        btn.addEventListener("click", () => {
+            current += btn.textContent;
+            updateDisplay(current);
+        });
     });
+
+    document.querySelectorAll(".operator").forEach(btn => {
+        btn.addEventListener("click", () => {
+            if (current === "") return;
+            if (previous !== "") {
+                previous = calculate();
+            } else {
+                previous = current;
+            }
+            current = "";
+            operator = btn.textContent;
+            updateDisplay(operator);
+        });
+    });
+
+    document.querySelector(".equals").addEventListener("click", () => {
+        if (current === "" || previous === "" || operator === "") return;
+        const result = calculate();
+        updateDisplay(result);
+        current = result;
+        previous = "";
+        operator = "";
+    });
+
+    document.querySelector(".clear").addEventListener("click", () => {
+        current = "";
+        previous = "";
+        operator = "";
+        updateDisplay(0);
+    });
+});
+// Footer dynamic year
+document.addEventListener("DOMContentLoaded", () => {
+    const footer = document.getElementById("footer");
+    const year = new Date().getFullYear();
+    footer.textContent = `© ${year} Created by Muhammad Fawad`;
 });
